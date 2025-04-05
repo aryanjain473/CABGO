@@ -1,0 +1,21 @@
+{
+    "captain": {
+        "fullname": {
+            "firstname": "test_captain_firstname",
+            "lastname": "test_captain_lastname"
+        },
+        "email": "test@test.com",
+        "password": "$2b$10$lELci4AvpEP0Ywfa0eQXD.c1AkuLl8Q9NoDw/d1/Bt7I2LDsuDxL2",
+        "socketId": null,
+        "status": "inactive",
+        "vehicle": {
+            "color": "red",
+            "plate": "MH 39 AB 3511",
+            "capacity": 3,
+            "vehicleType": "car"
+        },
+        "_id": "67ed579e3931524acc5e3a33",
+        "__v": 0
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2VkNTc5ZTM5MzE1MjRhY2M1ZTNhMzMiLCJpYXQiOjE3NDM2MDc3MTAsImV4cCI6MTc0MzY5NDExMH0.PgjvysrhEAbQ-fBeAhW9tJlVULMvVqLhzDTsntZKmuI"
+}
