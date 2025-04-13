@@ -22,8 +22,8 @@ const CaptainSignup = () => {
 
     const captainData = {
       fullname: {
-        firstname,
-        lastname,
+        firstname: firstName,
+        lastname: lastName
       },
       email,
       password,
@@ -58,9 +58,10 @@ const CaptainSignup = () => {
         setVehicleType("");
       }
     } catch (error) {
-      console.error("Signup failed:", error);
+      console.error("Signup failed:", error.response?.data || error.message);
       alert("Signup failed: " + (error.response?.data?.message || error.message));
     }
+    
   };
 
   return (
@@ -130,10 +131,11 @@ const CaptainSignup = () => {
           />
           <input
             className="bg-[#eeeeee] mb-2 rounded px-2 py-2 border w-full text-lg placeholder:text-base"
-            type="text"
+            type="Number"
             placeholder="Vehicle Capacity"
             value={vehicleCapacity}
-            onChange={(e) => setVehicleCapacity(e.target.value)}
+            onChange={(e) => setVehicleCapacity(e.target.value ? Number(e.target.value) : "")}
+
           />
           <select
             className="bg-[#eeeeee] mb-5 rounded px-2 py-2 border w-full text-lg"
