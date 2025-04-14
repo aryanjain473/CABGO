@@ -10,38 +10,26 @@ const CaptainProtectWrapper = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Redirect if token is not found
     if (!token) {
-      navigate('/captain-login');
-      return;
+        navigate('/captain-login')
     }
 
-    // Fetch captain profile using token
-    const fetchCaptain = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/captains/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          setCaptain(response.data.captain);
-          setIsLoading(false);
-        } else {
-          navigate('/captain-login');
+    axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
+        headers: {
+            Authorization: `Bearer ${token}`
         }
-      } catch (error) {
-        console.error('Error fetching captain data:', error);
-        navigate('/captain-login');
-      }
-    };
+    }).then(response => {
+        if (response.status === 200) {
+            setCaptain(response.data.captain)
+            setIsLoading(false)
+        }
+    })
+        .catch(err => {
 
-    fetchCaptain();
-  }, [token, navigate, setCaptain]);
+            localStorage.removeItem('token')
+            navigate('/captain-login')
+        })
+}, [ token ])
 
   if (isLoading) {
     return <div>Loading...</div>;
