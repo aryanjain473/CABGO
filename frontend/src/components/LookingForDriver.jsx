@@ -1,13 +1,13 @@
 import React from 'react'
 
-const ConfirmRide = (props) => {
+const LookingForDriver = (props) => {
     return(
         <div>
             <h5 className='p-3 text-centre absolute top-0 w-[93%]'
         onClick={()=>{
-          props.setVehiclePanel(false)
+          props.setVehicleFound(false)
         }}><i className='text-3xl ri=arrow-down-wide-line'></i></h5>
-            <h3 className='text-2xl font-semibold mb-5'>Confirm your Ride</h3>
+            <h3 className='text-2xl font-semibold mb-5'>Looking for a Driver</h3>
 
         <div className='flex gap-2 justify-between flex-col items-center'>
         <img className='h-20' src='https://i.pinimg.com/736x/aa/84/44/aa8444a02253f234590d8094b3e9cfd6.jpg' alt=''/>
@@ -35,11 +35,9 @@ const ConfirmRide = (props) => {
                 </div>
                 </div>
             </div>
-            <button onClick={()=>{
-                props.setvehicleFound(true)
-                props.setConfirmRidePanel(false)
-            }} className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-xl'>Confirm your Ride</button>
         </div>
         </div>
     )
 }
+
+export default LookingForDriver
