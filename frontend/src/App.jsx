@@ -5,6 +5,7 @@ import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
 import CaptainLogin from "./pages/Captainlogin";
 import CaptainSignup from "./pages/CaptainSignup";
+import Riding from "./pages/Riding";
 import { UserLogout } from "./pages/UserLogout";
 import Home from "./pages/Home";
 import CaptainHome from "./pages/CaptainHome";

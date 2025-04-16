@@ -46,3 +46,4 @@ const Riding = () => {
         </div>
     )
 }
+export default Riding
