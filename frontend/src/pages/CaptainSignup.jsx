@@ -23,15 +23,15 @@ const CaptainSignup = () => {
     const captainData = {
       fullname: {
         firstname: firstName,
-        lastname: lastName
+        lastname: lastName,
       },
       email,
       password,
       vehicle: {
         color: vehicleColor,
         plate: vehiclePlate,
-        capacity: vehicleCapacity,
-       vehicleType: vehicleType,
+        capacity: Number(vehicleCapacity), // Ensure it's a number
+        vehicleType,
       },
     };
 
@@ -59,9 +59,11 @@ const CaptainSignup = () => {
       }
     } catch (error) {
       console.error("Signup failed:", error.response?.data || error.message);
-      alert("Signup failed: " + (error.response?.data?.message || error.message));
+      alert(
+        "Signup failed: " +
+          (error.response?.data?.message || JSON.stringify(error.response?.data.errors))
+      );
     }
-    
   };
 
   return (
@@ -114,10 +116,11 @@ const CaptainSignup = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <h3 className="text-lg font-medium mb-2">Vehicle Details (Optional)</h3>
+          <h3 className="text-lg font-medium mb-2">Vehicle Details</h3>
           <input
             className="bg-[#eeeeee] mb-2 rounded px-2 py-2 border w-full text-lg placeholder:text-base"
             type="text"
+            required
             placeholder="Vehicle Color"
             value={vehicleColor}
             onChange={(e) => setVehicleColor(e.target.value)}
@@ -125,30 +128,32 @@ const CaptainSignup = () => {
           <input
             className="bg-[#eeeeee] mb-2 rounded px-2 py-2 border w-full text-lg placeholder:text-base"
             type="text"
+            required
             placeholder="Vehicle Plate"
             value={vehiclePlate}
             onChange={(e) => setVehiclePlate(e.target.value)}
           />
           <input
             className="bg-[#eeeeee] mb-2 rounded px-2 py-2 border w-full text-lg placeholder:text-base"
-            type="Number"
+            type="number"
+            required
             placeholder="Vehicle Capacity"
             value={vehicleCapacity}
-            onChange={(e) => setVehicleCapacity(e.target.value ? Number(e.target.value) : "")}
-
+            onChange={(e) => setVehicleCapacity(e.target.value)}
           />
           <select
-            className="bg-[#eeeeee] mb-5 rounded px-2 py-2 border w-full text-lg"
-            value={vehicleType}
-            onChange={(e) => setVehicleType(e.target.value)}
-          >
-            <option value="">Select Vehicle Type</option>
-            <option value="sedan">Sedan</option>
-            <option value="hatchback">Hatchback</option>
-            <option value="suv">SUV</option>
-            <option value="minivan">Mini Van</option>
-            <option value="luxury">Luxury</option>
-          </select>
+  className="bg-[#eeeeee] mb-5 rounded px-2 py-2 border w-full text-lg"
+  value={vehicleType}
+  required
+  onChange={(e) => setVehicleType(e.target.value)}
+>
+  <option value="">Select Vehicle Type</option>
+  <option value="sedan">Sedan</option>
+  <option value="hatchback">Hatchback</option>
+  <option value="suv">SUV</option>          {/* 👈 lowercase value */}
+  <option value="mini van">Mini Van</option>
+  <option value="luxury">Luxury</option>
+</select>
 
           <button
             type="submit"
