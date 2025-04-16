@@ -43,3 +43,4 @@ const ConfirmRide = (props) => {
         </div>
     )
 }
+export default ConfirmRide
