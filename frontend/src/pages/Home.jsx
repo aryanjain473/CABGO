@@ -73,11 +73,20 @@ const Home = () => {
     });
   }, [vehicleFound]);
 
-  useGSAP(() => {
-    gsap.to(waitingForDriverRef.current, {
-      transform: waitingForDriver ? 'translateY(0)' : 'translateY(100%)',
-    });
-  }, [waitingForDriver]);
+
+  useGSAP(function () {
+    if(waitingForDriver){
+      gsap.to(waitingForDriverRef.current, {
+        transform: 'translateY(0)'
+      })
+    } else{
+      gsap.to(waitingForDriverRef.current, {
+        transform: 'translate(100%)'
+      })
+    }
+  }, [waitingForDriver])
+
+    
 
   return (
     <div className="h-screen relative overflow-hidden">
