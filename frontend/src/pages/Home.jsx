@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import 'remixicon/fonts/remixicon.css';
@@ -17,6 +18,10 @@ const Home = () => {
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
   const [vehicleFound, setVehicleFound] = useState(false);
   const [waitingForDriver, setWaitingForDriver] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeField, setActiveField] = useState(''); // 'pickup' or 'destination'
+  const [fare, setFare] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
@@ -27,6 +32,27 @@ const Home = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+  };
+
+  const fetchSuggestions = async (input) => {
+    if (!input || input.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+        params: { input },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setSuggestions(response.data);
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      setSuggestions([]);
+    }
   };
 
   useGSAP(() => {
@@ -86,7 +112,22 @@ const Home = () => {
     }
   }, [waitingForDriver])
 
-    
+  async function findTrip() {
+    setVehiclePanel(true)
+    setPanelOpen(false)
+
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+        params: { pickup, destination },
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+
+
+    setFare(response.data)
+
+  }
+  
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -125,10 +166,12 @@ const Home = () => {
             <input
               onClick={() => {
                 setPanelOpen(true);
+                setActiveField('pickup');
               }}
               value={pickup}
               onChange={(e) => {
                 setPickup(e.target.value);
+                fetchSuggestions(e.target.value);
               }}
               type="text"
               placeholder="Add a pick-up location"
@@ -138,22 +181,38 @@ const Home = () => {
             <input
               onClick={() => {
                 setPanelOpen(true);
+                setActiveField('destination');
               }}
               value={destination}
               onChange={(e) => {
                 setDestination(e.target.value);
+                fetchSuggestions(e.target.value);
               }}
               type="text"
               placeholder="Enter a destination"
               className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mb-5"
             />
-
-            <button type="submit">Find</button>
           </form>
+          <button 
+            onClick={findTrip}
+            disabled={isLoading || !pickup || !destination}
+            className={`bg-black text-white px-4 py-2 rounded-lg mt-3 w-full mb-5 ${
+              (isLoading || !pickup || !destination) ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {isLoading ? 'Calculating...' : 'Find Trip'}
+          </button>
         </div>
 
         <div ref={panelRef} className="bg-white h-0">
-          <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanel={setVehiclePanel} />
+          <LocationSearchPanel 
+            setPanelOpen={setPanelOpen} 
+            setVehiclePanel={setVehiclePanel}
+            suggestions={suggestions}
+            setPickup={setPickup}
+            setDestination={setDestination}
+            activeField={activeField}
+          />
         </div>
       </div>
 
@@ -162,15 +221,15 @@ const Home = () => {
       </div>
 
       <div ref={confirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <ConfirmRide setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} setVehiclePanel={setVehiclePanel} />
+        <ConfirmRide setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
       </div>
 
       <div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <LookingForDriver setVehicleFound={setVehicleFound} />
+        <LookingForDriver setVehicleFound={setVehicleFound} setWaitingForDriver={setWaitingForDriver} />
       </div>
 
       <div ref={waitingForDriverRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <WaitingForDriver setWaitingForDriver={setWaitingForDriver} setVehicleFound={setVehicleFound} />
+        <WaitingForDriver />
       </div>
     </div>
   );

@@ -88,3 +88,76 @@ curl -X POST http://<api_base_url>/user/register \
            "password": "password123"
          }'
 ```
+
+# Fare Calculation Endpoint
+
+## Endpoint: `/rides/fare`
+
+### Description
+This endpoint calculates the estimated fare for a ride based on pickup and destination locations. It uses distance and duration data from Google Maps to compute fares for different vehicle types.
+
+### HTTP Method
+`GET`
+
+### Query Parameters
+- `pickup`: The pickup location address (required, minimum 3 characters)
+- `destination`: The destination location address (required, minimum 3 characters)
+
+### Authorization
+Requires a valid user authentication token in the Authorization header:
+```
+Authorization: Bearer <token>
+```
+
+### Response
+#### Success (200 OK)
+Returns estimated fares for different vehicle types.
+
+Example:
+```json
+{
+  "fare": {
+    "auto": 150,
+    "car": 200,
+    "moto": 100
+  }
+}
+```
+
+#### Error Responses
+
+##### 400 Bad Request
+If validation fails for pickup or destination parameters:
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid pickup location",
+      "param": "pickup",
+      "location": "query"
+    }
+  ]
+}
+```
+
+##### 401 Unauthorized
+If authentication token is missing or invalid:
+```json
+{
+  "message": "Token not provided"
+}
+```
+
+##### 500 Internal Server Error
+If there's an error calculating the fare:
+```json
+{
+  "error": "Unable to fetch distance and time"
+}
+```
+
+### Example Usage
+```bash
+curl -X GET 'http://<api_base_url>/rides/fare?pickup=Mumbai&destination=Pune' \
+     -H 'Authorization: Bearer <your_token>'
+```

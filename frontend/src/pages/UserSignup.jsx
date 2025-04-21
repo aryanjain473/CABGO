@@ -18,8 +18,7 @@ const UserSignup = () => {
 
   const { user, setUser } = useContext(UserDataContext)
 
-
-
+  
 
   const submitHandler = async (e) => {
     e.preventDefault()
