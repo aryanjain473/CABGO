@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-const VehiclePanel = ({ fare, setConfirmRidePanel, setVehiclePanel }) => {
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
-
+const VehiclePanel = ({ fare, setConfirmRidePanel, setVehiclePanel, selectVehicle }) => {
   const handleVehicleSelect = (type) => {
-    setSelectedVehicle(type);
+    selectVehicle(type);
     setConfirmRidePanel(true);
     setVehiclePanel(false);
   };

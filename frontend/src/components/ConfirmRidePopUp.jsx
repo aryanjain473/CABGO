@@ -57,6 +57,7 @@ onClick={()=>{
 <button onClick={()=>{
      props.setConfirmRidePopUpPanel(false)
      props.setRidePopUpPanel(false)
+     
  }} className='w-full mt-1 bg-red-500 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button></form>
     </div>
 </div>

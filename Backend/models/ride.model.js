@@ -47,6 +47,11 @@ const rideSchema = new mongoose.Schema({
         select: false,
         required: true
     },
+    vehicleType: {
+        type: String,
+        enum: ['auto', 'car', 'moto'],
+        required: true
+    },
 })
 
 module.exports = mongoose.model('Ride', rideSchema);

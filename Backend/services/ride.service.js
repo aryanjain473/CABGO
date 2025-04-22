@@ -1,6 +1,6 @@
+const crypto = require('crypto');
 const rideModel = require('../models/ride.model');
 const mapService = require('./maps.service');
-
 
 async function getFare(pickup, destination) {
     if (!pickup || !destination) {
@@ -9,7 +9,6 @@ async function getFare(pickup, destination) {
 
     const distanceTime = await mapService.getDistanceTime(pickup, destination);
 
-    
     const baseFare = {
         auto: 30,
         car: 50,
@@ -27,7 +26,6 @@ async function getFare(pickup, destination) {
         car: 3,
         moto: 1.5
     };
-
 
     const fare = {
         auto: Math.round(baseFare.auto + ((distanceTime.distance.value / 1000) * perKmRate.auto) + ((distanceTime.duration.value / 60) * perMinuteRate.auto)),
@@ -48,23 +46,29 @@ function getOtp(num) {
     return generateOtp(num);
 }
 
-
 module.exports.createRide = async ({ 
-    userId,pickup,destination,vehicleType
+    user, pickup, destination, vehicleType
 }) => {
-    if (!userId || !pickup || !destination || !vehicleType) {
-        throw new Error('userId, pickup, destination and vehicleType are required');
+    try {
+        if (!user || !pickup || !destination || !vehicleType) {
+            throw new Error('user, pickup, destination and vehicleType are required');
+        }
+
+        const fare = await getFare(pickup, destination);
+        
+        const ride = await rideModel.create({
+            user,
+            pickup,
+            destination,
+            vehicleType,
+            otp: getOtp(6),
+            fare: fare[vehicleType],
+            status: 'pending'
+        });
+
+        return ride;
+    } catch (error) {
+        console.error('Error in createRide service:', error);
+        throw error;
     }
-
-    const fare = await getFare(pickup, destination);
-
-    const ride = new rideModel.create({
-        userId,
-        pickup,
-        destination,
-        otp: getOtp(6),
-        fare: fare[vehicleType],
-    });
-
-    return ride;
- }
+}

@@ -22,6 +22,7 @@ const Home = () => {
   const [activeField, setActiveField] = useState(''); // 'pickup' or 'destination'
   const [fare, setFare] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [vehicleType, setVehicleType] = useState(null);
   
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
@@ -125,15 +126,46 @@ const Home = () => {
         }
       });
 
-      setFare(response.data.fare); // Access the fare object from response.data.fare
+      setFare(response.data.fare);
     } catch (error) {
       console.error('Error fetching fare:', error);
-      // Handle error appropriately
     } finally {
       setIsLoading(false);
     }
   }
+
+  const createRide = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
   
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/create`,
+        {
+          pickup,
+          destination,
+          vehicleType
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+  
+      if (response.data && response.data.ride) {
+        console.log('Ride created successfully:', response.data.ride);
+        return response.data.ride;
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Error creating ride:', error.response?.data || error.message);
+      throw error;
+    }
+  };
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -223,15 +255,26 @@ const Home = () => {
       </div>
 
       <div ref={vehiclePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <VehiclePanel fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+        <VehiclePanel selectVehicle={setVehicleType}
+         fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
       </div>
 
       <div ref={confirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <ConfirmRide setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
+        <ConfirmRide createRide={createRide}
+        pickup={pickup} 
+        destination={destination}
+        fare={fare}
+        vehicleType={vehicleType}
+         setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
       </div>
 
       <div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <LookingForDriver setVehicleFound={setVehicleFound} setWaitingForDriver={setWaitingForDriver} />
+        <LookingForDriver
+        pickup={pickup} 
+        destination={destination}
+        fare={fare}
+        vehicleType={vehicleType}
+         setVehicleFound={setVehicleFound} setWaitingForDriver={setWaitingForDriver} />
       </div>
 
       <div ref={waitingForDriverRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">

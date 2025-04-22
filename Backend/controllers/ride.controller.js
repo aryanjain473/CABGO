@@ -2,17 +2,31 @@ const rideService = require('../services/ride.service');
 const {validationResult} = require('express-validator');
 
 module.exports.createRide = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    
-    const {userId, pickup, destination, vehicleType} = req.body;
     try {
-        const ride = await rideService.createRide({user: req.user._id, pickup, destination, vehicleType});
-        return res.status(201).json({ride});
+        // Check if user exists in request
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        
+        const { pickup, destination, vehicleType } = req.body;
+        console.log('Creating ride with:', { userId: req.user._id, pickup, destination, vehicleType });
+        
+        const ride = await rideService.createRide({
+            user: req.user._id, 
+            pickup, 
+            destination, 
+            vehicleType
+        });
+        
+        return res.status(201).json({ ride });
     } catch (error) {
-        return res.status(500).json({error: error.message});
+        console.error('Error in createRide controller:', error);
+        return res.status(500).json({ error: error.message || 'Internal server error' });
     }
 };
 
