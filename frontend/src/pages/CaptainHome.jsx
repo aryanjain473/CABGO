@@ -50,7 +50,7 @@ const CaptainHome = () => {
     <img className='h-full w-full object-cover' src='https://i2-prod.mylondon.news/article16106961.ece/ALTERNATES/s615/2_Uber-pink-cars.jpg' alt=''/>
     </div>
     <div className='h-2/5 p-6'>
-      <CaptainDetails/>
+      <CaptainDetails/> 
      </div>
      <div ref={ridePopupPanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
      <RidePopUp

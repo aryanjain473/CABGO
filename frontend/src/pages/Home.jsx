@@ -114,8 +114,8 @@ const Home = () => {
   }, [waitingForDriver])
 
   async function findTrip() {
-    try {
-      setIsLoading(true);
+    
+      // setIsLoading(true);
       setVehiclePanel(true);
       setPanelOpen(false);
 
@@ -127,12 +127,8 @@ const Home = () => {
       });
 
       setFare(response.data.fare);
-    } catch (error) {
-      console.error('Error fetching fare:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    } 
+  
 
   const createRide = async () => {
     try {
@@ -231,15 +227,11 @@ const Home = () => {
               className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mb-5"
             />
           </form>
-          <button 
-            onClick={findTrip}
-            disabled={isLoading || !pickup || !destination}
-            className={`bg-black text-white px-4 py-2 rounded-lg mt-3 w-full mb-5 ${
-              (isLoading || !pickup || !destination) ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {isLoading ? 'Calculating...' : 'Find Trip'}
-          </button>
+          <button
+                        onClick={findTrip}
+                        className='bg-black text-white px-4 py-2 rounded-lg mt-3 w-full'>
+                        Find Trip
+                    </button>
         </div>
 
         <div ref={panelRef} className="bg-white h-0">
@@ -269,19 +261,24 @@ const Home = () => {
       </div>
 
       <div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <LookingForDriver
-        pickup={pickup} 
-        destination={destination}
-        fare={fare}
-        vehicleType={vehicleType}
-         setVehicleFound={setVehicleFound} setWaitingForDriver={setWaitingForDriver} />
+      <LookingForDriver
+                    createRide={createRide}
+                    pickup={pickup}
+                    destination={destination}
+                    fare={fare}
+                    vehicleType={vehicleType}
+                    setVehicleFound={setVehicleFound} />
       </div>
 
       <div ref={waitingForDriverRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <WaitingForDriver />
+        <WaitingForDriver 
+        
+        pickup={pickup}
+        destination={destination}
+        vehicleType={vehicleType}
+      />
       </div>
     </div>
   );
-};
-
+            }
 export default Home;
