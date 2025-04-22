@@ -20,9 +20,9 @@ const Home = () => {
   const [waitingForDriver, setWaitingForDriver] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(''); // 'pickup' or 'destination'
-  const [fare, setFare] = useState();
+  const [fare, setFare] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
   const vehicleFoundRef = useRef(null);
@@ -113,19 +113,25 @@ const Home = () => {
   }, [waitingForDriver])
 
   async function findTrip() {
-    setVehiclePanel(true)
-    setPanelOpen(false)
+    try {
+      setIsLoading(true);
+      setVehiclePanel(true);
+      setPanelOpen(false);
 
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
         params: { pickup, destination },
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
-    })
+      });
 
-
-    setFare(response.data)
-
+      setFare(response.data.fare); // Access the fare object from response.data.fare
+    } catch (error) {
+      console.error('Error fetching fare:', error);
+      // Handle error appropriately
+    } finally {
+      setIsLoading(false);
+    }
   }
   
 
@@ -217,7 +223,7 @@ const Home = () => {
       </div>
 
       <div ref={vehiclePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+        <VehiclePanel fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
       </div>
 
       <div ref={confirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
