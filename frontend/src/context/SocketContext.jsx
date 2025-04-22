@@ -16,7 +16,7 @@ const SocketProvider = ({ children }) => {
         function attemptJoin() {
             const userId = localStorage.getItem('userId');
             const userType = localStorage.getItem('userType');
-            
+            //console
             console.log('Checking credentials:', { userId, userType });
             
             if (userId && userType) {
