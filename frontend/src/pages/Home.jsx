@@ -126,8 +126,9 @@ const Home = () => {
 
     setFare(response.data)
 
+
+
   }
-  
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -217,7 +218,7 @@ const Home = () => {
       </div>
 
       <div ref={vehiclePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+        <VehiclePanel fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
       </div>
 
       <div ref={confirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">

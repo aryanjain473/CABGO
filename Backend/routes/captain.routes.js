@@ -4,6 +4,7 @@ const router = express.Router();
 const { body } = require("express-validator")
 const authMiddleware = require('../middlewares/auth.middleware');
 
+
 router.post('/register', [
     body('email')
         .isEmail()
@@ -34,6 +35,7 @@ router.post('/register', [
         .withMessage('Invalid vehicle type')
 
 ], captainController.registerCaptain);
+
 
 router.post('/login', [
     body('email').isEmail().withMessage('Invalid Email'),
