@@ -6,18 +6,18 @@ import { useNavigate } from 'react-router-dom'
 export const UserLogout = () => {
 
  const token = localStorage.getItem('token')
- const navigate = useNavigate(
+ const navigate = useNavigate()
 
- )
-
- axios.get(`${import.meta.en.VITE_BASE_URL}/users/logout`,{
+ axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`,{
     headers: {
         Authorization: `Bearer ${token}`
     }
  }).then((response) => {
     if (response.status === 200){
-        localStorage.removeItem('token')
-    navigate('/login')
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');     // Add this
+        localStorage.removeItem('userType');   // Add this
+        navigate('/login')
     }
 
  })

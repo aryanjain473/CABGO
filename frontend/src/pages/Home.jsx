@@ -36,8 +36,24 @@ const Home = () => {
   const { user } = useContext(UserDataContext)
 
   useEffect(() => {
-      socket.emit("join", { userType: "user", userId: user._id })
-  }, [ user ])
+    if (user?._id) {
+        const joinData = {
+            userId: user._id,
+            userType: "user"
+        };
+        console.log("Emitting join event with data:", joinData);
+        socket.emit("join", joinData);
+
+        // Listen for join confirmation
+        socket.on('join_confirmed', (data) => {
+            console.log('Join confirmed from server:', data);
+        });
+
+        return () => {
+            socket.off('join_confirmed');
+        };
+    }
+}, [user, socket]);
   
   const submitHandler = (e) => {
     e.preventDefault();
