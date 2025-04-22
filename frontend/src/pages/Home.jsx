@@ -125,6 +125,16 @@ const Home = () => {
         }
       });
 
+      setFare(response.data.fare); // Access the fare object from response.data.fare
+    } catch (error) {
+      console.error('Error fetching fare:', error);
+      // Handle error appropriately
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  
+
   return (
     <div className="h-screen relative overflow-hidden">
       <img src="Cabgo.png" alt="Cabgo" className="w-16 absolute left-5 top-5" />
@@ -229,6 +239,6 @@ const Home = () => {
       </div>
     </div>
   );
-}};
-}
+};
+
 export default Home;
