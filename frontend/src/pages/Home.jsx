@@ -108,7 +108,7 @@ const Home = () => {
       })
     } else{
       gsap.to(waitingForDriverRef.current, {
-        transform: 'translate(100%)'
+        transform: 'translateY(100%)'  // Fixed from translate(100%) to translateY(100%)
       })
     }
   }, [waitingForDriver])
@@ -246,38 +246,53 @@ const Home = () => {
         </div>
       </div>
 
-      <div ref={vehiclePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <VehiclePanel selectVehicle={setVehicleType}
-         fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
-      </div>
+      {vehiclePanel && (
+  <div ref={vehiclePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
+    <VehiclePanel
+      selectVehicle={setVehicleType}
+      fare={fare}
+      setConfirmRidePanel={setConfirmRidePanel}
+      setVehiclePanel={setVehiclePanel}
+    />
+  </div>
+)}
 
-      <div ref={confirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <ConfirmRide createRide={createRide}
-        pickup={pickup} 
-        destination={destination}
-        fare={fare}
-        vehicleType={vehicleType}
-         setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
-      </div>
+{confirmRidePanel && (
+  <div ref={confirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
+    <ConfirmRide
+      createRide={createRide}
+      pickup={pickup}
+      destination={destination}
+      fare={fare}
+      vehicleType={vehicleType}
+      setConfirmRidePanel={setConfirmRidePanel}
+      setVehicleFound={setVehicleFound}
+    />
+  </div>
+)}
 
-      <div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-      <LookingForDriver
-                    createRide={createRide}
-                    pickup={pickup}
-                    destination={destination}
-                    fare={fare}
-                    vehicleType={vehicleType}
-                    setVehicleFound={setVehicleFound} />
-      </div>
+{vehicleFound && (
+  <div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
+    <LookingForDriver
+      pickup={pickup}
+      destination={destination}
+      fare={fare}
+      vehicleType={vehicleType}
+      setVehicleFound={setVehicleFound}
+      setWaitingForDriver={setWaitingForDriver}
+    />
+  </div>
+)}
 
-      <div ref={waitingForDriverRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
-        <WaitingForDriver 
-        
-        pickup={pickup}
-        destination={destination}
-        vehicleType={vehicleType}
-      />
-      </div>
+{waitingForDriver && (
+  <div ref={waitingForDriverRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-12">
+    <WaitingForDriver 
+      pickup={pickup}
+      destination={destination}
+      vehicleType={vehicleType}
+    />
+  </div>
+)}
     </div>
   );
             }
