@@ -11,9 +11,6 @@ const VehiclePanel = (props) => {
         <i className='text-3xl ri-arrow-down-wide-line'></i>
       </h5>
       <h3 className='text-2xl font-semibold mb-5'>Choose a Vehicle</h3>
-      
-   
-        
           <div onClick={() => props.setConfirmRidePanel(true)} 
                className='flex border-2 border-black rounded-xl w-full items-center mb-2 justify-between'>
             

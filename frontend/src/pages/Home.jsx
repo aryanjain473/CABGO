@@ -20,9 +20,9 @@ const Home = () => {
   const [waitingForDriver, setWaitingForDriver] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(''); // 'pickup' or 'destination'
-  const [fare, setFare] = useState();
+  const [fare, setFare] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
   const vehicleFoundRef = useRef(null);
@@ -113,22 +113,17 @@ const Home = () => {
   }, [waitingForDriver])
 
   async function findTrip() {
-    setVehiclePanel(true)
-    setPanelOpen(false)
+    try {
+      setIsLoading(true);
+      setVehiclePanel(true);
+      setPanelOpen(false);
 
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
         params: { pickup, destination },
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
-    })
-
-
-    setFare(response.data)
-
-
-
-  }
+      });
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -234,6 +229,6 @@ const Home = () => {
       </div>
     </div>
   );
-};
-
+}};
+}
 export default Home;
