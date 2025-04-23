@@ -7,7 +7,6 @@ const rideModel = require('../models/ride.model');
 
 module.exports.createRide = async (req, res) => {
     try {
-        // Check if user exists in request
         if (!req.user || !req.user._id) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
@@ -18,8 +17,8 @@ module.exports.createRide = async (req, res) => {
         }
         
         const { pickup, destination, vehicleType } = req.body;
-        console.log('Creating ride with:', { userId: req.user._id, pickup, destination, vehicleType });
         
+        // Create ride first
         const ride = await rideService.createRide({
             user: req.user._id, 
             pickup, 
@@ -27,18 +26,35 @@ module.exports.createRide = async (req, res) => {
             vehicleType
         });
 
-        res.status(201).json({ ride });
-        const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
-        const captainsInRadius =  await mapService.getCaptainsInTheRadius(pickupCoordinates.ltd,pickupCoordinates.lng, 2)
-        ride.otp = ""
-        const rideWithUser = await rideModel.findOne({_id: ride._id}).populate('user')
+        // Get coordinates only after ride is created successfully
+        try {
+            const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
+            if (pickupCoordinates && pickupCoordinates.lat && pickupCoordinates.lng) {
+                const captainsInRadius = await mapService.getCaptainsInTheRadius(
+                    pickupCoordinates.lat, 
+                    pickupCoordinates.lng, 
+                    2
+                );
+                
+                const rideWithUser = await rideModel.findOne({_id: ride._id}).populate('user');
+                
+                // Notify available captains
+                captainsInRadius.forEach(captain => {
+                    if (captain.socketId) {
+                        sendMessageToSocketId(captain.socketId, {
+                            event: 'new-ride',
+                            data: rideWithUser
+                        });
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error notifying captains:', error);
+            // Don't return here - we still want to send the ride response
+        }
 
-        captainsInRadius.map(captain => {
-            sendMessageToSocketId(captain.socketId, {
-                event: 'new-ride',
-                data: rideWithUser
-            })
-        })
+        return res.status(201).json({ ride });
+
     } catch (error) {
         console.error('Error in createRide controller:', error);
         return res.status(500).json({ error: error.message || 'Internal server error' });

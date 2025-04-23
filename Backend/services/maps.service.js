@@ -75,16 +75,21 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
 }
 
 module.exports.getCaptainsInTheRadius = async (lat, lng, radius) => {
-// radius in km
-
-
-
-  const captains = await captainModel.find({
-    location: {
-      $geoWithin: {
-        $centerSphere: [[lng, lat], radius / 6371] // radius in miles
-      }
+    if (!lat || !lng) {
+        throw new Error('Invalid coordinates');
     }
-  });
-  return captains;
+
+    try {
+        const captains = await captainModel.find({
+            location: {
+                $geoWithin: {
+                    $centerSphere: [[Number(lng), Number(lat)], radius / 6371]
+                }
+            }
+        });
+        return captains;
+    } catch (error) {
+        console.error('Error finding captains:', error);
+        return [];
+    }
 }

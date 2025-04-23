@@ -45,18 +45,22 @@ const ConfirmRide = ({
         </div>
         <button 
           onClick={async () => {
+            if (!pickup || !destination || !vehicleType || !fare) {
+              alert('Please ensure all ride details are complete');
+              return;
+            }
+            
             try {
               await createRide();
               setVehicleFound(true);
               setConfirmRidePanel(false);
             } catch (error) {
               console.error('Error creating ride:', error);
-              // Optionally show error to user
-              alert('Failed to create ride. Please try again.');
+              alert(error.response?.data?.error || 'Failed to create ride. Please try again.');
             }
           }} 
-          className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-xl'
-          disabled={!fare || !vehicleType}
+          className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-xl disabled:bg-gray-400'
+          disabled={!pickup || !destination || !fare || !vehicleType}
         >
           Confirm your Ride
         </button>
