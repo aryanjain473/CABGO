@@ -25,26 +25,37 @@ module.exports.createRide = async (req, res) => {
             destination, 
             vehicleType
         });
+        console.log('Ride created:', ride);
 
         // Get coordinates only after ride is created successfully
         try {
             const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
+            console.log('Pickup coordinates:', pickupCoordinates);
+            
             if (pickupCoordinates && pickupCoordinates.lat && pickupCoordinates.lng) {
                 const captainsInRadius = await mapService.getCaptainsInTheRadius(
                     pickupCoordinates.lat, 
                     pickupCoordinates.lng, 
                     2
                 );
+                console.log('Found captains in radius:', captainsInRadius);
                 
                 const rideWithUser = await rideModel.findOne({_id: ride._id}).populate('user');
+                console.log('Ride with user details:', rideWithUser);
                 
                 // Notify available captains
                 captainsInRadius.forEach(captain => {
+                    console.log('Attempting to notify captain:', captain._id);
+                    console.log('Captain socket ID:', captain.socketId);
+                    
                     if (captain.socketId) {
+                        console.log('Sending notification to captain socket:', captain.socketId);
                         sendMessageToSocketId(captain.socketId, {
                             event: 'new-ride',
                             data: rideWithUser
                         });
+                    } else {
+                        console.log('Captain has no socket ID, skipping notification');
                     }
                 });
             }
@@ -77,25 +88,48 @@ module.exports.getFare = async (req, res) => {
 }
 
 module.exports.confirmRide = async (req, res) => {
+    console.log('Confirm ride request received:', req.body);
+    console.log('Captain from request:', req.captain);
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
         return res.status(400).json({ errors: errors.array() });
     }
     
     const {rideId} = req.body;
+    if (!rideId) {
+        console.log('No ride ID provided');
+        return res.status(400).json({error: 'Ride ID is required'});
+    }
+
     try {
-        const ride = await rideService.confirmRide(rideId, req.captain._id);
+        const ride = await rideService.confirmRide({
+            rideId,
+            captain: req.captain
+        });
+        
+        console.log('Ride confirmed:', ride);
 
-        sendMessageToSocketId(ride.user.socketId, {
-            event: 'ride-confirmed',
-            data: ride
-        })
-
-        if(!ride){
+        if(!ride) {
+            console.log('Ride not found');
             return res.status(404).json({error: 'Ride not found'});
         }
+
+        if (ride.user?.socketId) {
+            console.log('Sending confirmation to user socket:', ride.user.socketId);
+            sendMessageToSocketId(ride.user.socketId, {
+                event: 'ride-confirmed',
+                data: ride
+            });
+            console.log('Notification sent to user');
+        } else {
+            console.log('No user socket ID found');
+        }
+
         return res.status(200).json({ride});
     } catch (error) {
+        console.error('Error confirming ride:', error);
         return res.status(500).json({error: error.message});
     }
 }

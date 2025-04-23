@@ -43,13 +43,22 @@ const RidePopUp = (props) => {
         </div>
 <div className='flex mt-5 w-full items-center justify-between'>
 <button onClick={()=>{
-            props.setRidePopUpPanel(false)
-        }} className='mt-1 bg-gray-200 text-gray-700 font-semibold p-3 px-10 rounded-xl'>Ignore</button>
-        <button onClick={()=>{
-          props.setConfirmRidePopUpPanel(true)
-          props.confirmRide()
-            
-      }} className=' bg-green-600 text-white font-semibold p-3 px-10 rounded-xl'>Accept</button>
+            props.setRidePopUpPanel(false);
+        }} className='mt-1 bg-gray-200 text-gray-700 font-semibold p-3 px-10 rounded-xl'>
+    Ignore
+</button>
+<button onClick={() => {
+    console.log('Accept button clicked');
+    console.log('Ride ID:', props.ride?._id);
+    props.setConfirmRidePopUpPanel(true);
+    if (props.ride?._id) {
+        props.confirmRide(props.ride._id);
+    } else {
+        console.error('No ride ID available');
+    }
+}} className='bg-green-600 text-white font-semibold p-3 px-10 rounded-xl'>
+    Accept
+</button>
  
       
         </div>

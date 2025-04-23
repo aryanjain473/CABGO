@@ -47,9 +47,15 @@ const CaptainHome = () => {
 
       // Add socket event listener
       socket.on('new-ride', (data) => {
-        console.log('New ride received:', data)
-        setRide(data)
-        setRidePopupPanel(true)
+        console.log('New ride received:', data);
+        console.log('Ride details:', {
+          id: data._id,
+          pickup: data.pickup,
+          destination: data.destination,
+          user: data.user
+        });
+        setRide(data);
+        setRidePopupPanel(true);
       })
 
       // Cleanup function
@@ -61,24 +67,32 @@ const CaptainHome = () => {
   }, [captain, socket])
 
   async function confirmRide(rideId) {
+    console.log('Confirming ride with ID:', rideId);
     try {
+      const token = localStorage.getItem('token');
+      console.log('Using token:', token);
+      
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/rides/confirm`,
         { rideId },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         }
-      )
+      );
+      
+      console.log('Confirm ride response:', response);
+      
       if (response.status === 200) {
-        // Handle successful confirmation
-        setConfirmRidePopUpPanel(true)
-        setRidePopupPanel(false)
+        console.log('Ride confirmed successfully');
+        setConfirmRidePopUpPanel(true);
+        setRidePopupPanel(false);
       }
     } catch (error) {
-      console.error('Failed to confirm ride:', error)
-      alert('Failed to confirm ride. Please try again.')
+      console.error('Failed to confirm ride:', error.response || error);
+      alert(`Failed to confirm ride: ${error.response?.data?.error || error.message}`);
     }
   }
 
@@ -136,6 +150,7 @@ const CaptainHome = () => {
         <ConfirmRidePopUp 
           setConfirmRidePopUpPanel={setConfirmRidePopUpPanel} 
           setRidePopUpPanel={setRidePopupPanel}
+          ride={ride} // Pass the ride data
         />
       </div>
     </div>
