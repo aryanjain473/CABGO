@@ -1,30 +1,46 @@
 const axios = require('axios');
 const captainModel = require('../models/captain.model');
 
+module.exports.getAddressCoordinate = async (address) => {
+  if (!address || typeof address !== 'string') {
+    throw new Error('Invalid address provided');
+  }
 
-    module.exports.getAddressCoordinate = async (address) => {
-      const apiKey = 'AIzaSyCS9L0pd2x9boBbdWh3Dla1idMDxUOIInU';
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+  const apiKey = process.env.GOOGLE_MAPS_API; // Use environment variable instead of hardcoded key
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+  try {
+    const response = await axios.get(url);
     
-      try {
-        const response = await axios.get(url);
-        
-    
-        if (response.data.status === 'OK') {
-          const location = response.data.results[0].geometry.location;
-          return {
-            lat: location.lat,
-            lng: location.lng
-          };
-        } else {
-          throw new Error('Unable to fetch coordinates');
-        }
-      } catch (error) {
-        console.error(error.message);
-        throw error;
+    if (response.data.status === 'OK' && response.data.results.length > 0) {
+      const location = response.data.results[0].geometry.location;
+      
+      // Validate coordinates
+      if (!isValidCoordinate(location.lat) || !isValidCoordinate(location.lng)) {
+        throw new Error('Invalid coordinates received from API');
       }
-    };
-    
+
+      return {
+        lat: location.lat,
+        lng: location.lng
+      };
+    } else {
+      throw new Error(`Geocoding failed: ${response.data.status}`);
+    }
+  } catch (error) {
+    console.error('Geocoding error:', error.message);
+    throw new Error('Failed to get location coordinates');
+  }
+};
+
+// Add helper function to validate coordinates
+function isValidCoordinate(coord) {
+  return typeof coord === 'number' && 
+         !isNaN(coord) && 
+         isFinite(coord) && 
+         Math.abs(coord) <= 180;
+}
+
 module.exports.getDistanceTime = async(origin, destination) => {
   if(!origin || !destination) {
     throw new Error('Origin and destinations are required');
