@@ -18,6 +18,14 @@ module.exports.createRide = async (req, res) => {
         
         const { pickup, destination, vehicleType } = req.body;
         
+        // Add more detailed logging
+        console.log('Creating ride with:', {
+            user: req.user._id,
+            pickup, 
+            destination,
+            vehicleType
+        });
+
         // Create ride first
         const ride = await rideService.createRide({
             user: req.user._id, 

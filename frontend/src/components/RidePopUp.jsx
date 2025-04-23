@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const RidePopUp = (props) => {
+    useEffect(() => {
+        console.log('RidePopUp mounted/updated with ride:', props.ride);
+    }, [props.ride]);
+
+    // Guard clause - don't render if no ride data
+    if (!props.ride) {
+        console.log('No ride data available');
+        return null;
+    }
+
     return (
         <div> 
         <h5 className='p-3 text-center absolute top-0 w-[93%]'
-    onClick={()=>{
+    onClick={()=>{ 
       props.setRidePopUpPanel(false)
     }}><i className='text-3xl ri-arrow-down-wide-line'></i></h5>
         <h3 className='text-2xl font-semibold mb-5 '>New Ride Available!</h3>
@@ -42,7 +52,7 @@ const RidePopUp = (props) => {
             </div>
         </div>
 <div className='flex mt-5 w-full items-center justify-between'>
-<button onClick={()=>{
+<button onClick={()=>{ 
             props.setRidePopUpPanel(false);
         }} className='mt-1 bg-gray-200 text-gray-700 font-semibold p-3 px-10 rounded-xl'>
     Ignore
@@ -68,4 +78,4 @@ const RidePopUp = (props) => {
     );
 }
 
-export default RidePopUp;
+export default React.memo(RidePopUp); // Optimize re-renders

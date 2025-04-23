@@ -5,7 +5,11 @@ export const SocketContext = createContext();
 
 const socket = io(`${import.meta.env.VITE_BASE_URL}`, {
     autoConnect: true,
-    reconnection: true
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    timeout: 20000,
+    transports: ['websocket', 'polling']
 });
 
 const SocketProvider = ({ children }) => {
@@ -50,6 +54,25 @@ const SocketProvider = ({ children }) => {
             console.error('❌ Socket error:', error);
         });
 
+        socket.on('reconnect', (attempt) => {
+            console.log('Socket Reconnected after', attempt, 'attempts');
+            setIsConnected(true);
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+            setIsConnected(false);
+        });
+
+        socket.on('connect_timeout', () => {
+            console.error('Socket connection timeout');
+            setIsConnected(false);
+        });
+
+        socket.io.on('reconnect_attempt', () => {
+            console.log('Attempting to reconnect...');
+        });
+
         // Attempt join if already connected
         if (socket.connected && !joinAttempted) {
             attemptJoin();
@@ -60,6 +83,10 @@ const SocketProvider = ({ children }) => {
             socket.off('disconnect');
             socket.off('error');
             socket.off('join_confirmed');
+            socket.off('reconnect');
+            socket.off('connect_error');
+            socket.off('connect_timeout');
+            socket.io.off('reconnect_attempt');
         };
     }, [joinAttempted]);
 
